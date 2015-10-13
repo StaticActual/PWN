@@ -27,6 +27,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import android.content.Intent;
 
+import android.content.Context;
+
 public class MainActivity extends ActionBarActivity {
 
     // Declaring Your View and Variables
@@ -40,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
 
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
-    public final static int WIDTH = 800;
+    public final static int WIDTH = 650;
     public final static String STR = "WIFI:S:PWN Test Network;T:WPA;P:pwntheworld;;";
 
     @Override
@@ -120,13 +122,15 @@ public class MainActivity extends ActionBarActivity {
             Log.v("DebugLog", "Success! Contents: " + contents);
             Log.v("DebugLog", "SSID: " + wifiParsedResult.getSsid());
             // TODO: Insert code to complete connection
+            WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
         }
         else {
             Log.v("DebugLog", "Failed");
         }
     }
 
-    public void genQROnClick(View v) {
+    public void genQR(View v) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         ImageView imageView = (ImageView) findViewById(R.id.qrCode);
         try {
