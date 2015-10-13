@@ -1,9 +1,11 @@
 package com.defiance.chandlerfreeman.pwn;
 
+import android.net.wifi.WifiManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.graphics.*;
@@ -15,9 +17,15 @@ import android.widget.ImageView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.Result;
 import com.google.zxing.WriterException;
+import com.google.zxing.client.result.ResultParser;
+import com.google.zxing.client.result.WifiParsedResult;
+import com.google.zxing.client.result.WifiResultParser;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import android.content.Intent;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -33,7 +41,7 @@ public class MainActivity extends ActionBarActivity {
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
     public final static int WIDTH = 800;
-    public final static String STR = "WIFI:S:chandlerswifi;T:WPA;P:eloquence;;";
+    public final static String STR = "WIFI:S:PWN Test Network;T:WPA;P:pwntheworld;;";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +104,26 @@ public class MainActivity extends ActionBarActivity {
 
     public void scanButtonOnClick(View v) {
         IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-        integrator.setPrompt("Scan a barcode");
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+        integrator.setPrompt("");
         integrator.setCameraId(0);  // Use a specific camera of the device
         integrator.setBeepEnabled(false);
         integrator.initiateScan();
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanResult != null) {
+            String contents = intent.getStringExtra("SCAN_RESULT");
+            //String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+            WifiParsedResult wifiParsedResult = new QRWifiParser().parse(contents);
+            Log.v("DebugLog", "Success! Contents: " + contents);
+            Log.v("DebugLog", "SSID: " + wifiParsedResult.getSsid());
+            // TODO: Insert code to complete connection
+        }
+        else {
+            Log.v("DebugLog", "Failed");
+        }
     }
 
     public void genQROnClick(View v) {
