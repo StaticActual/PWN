@@ -14,7 +14,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create a new QR"
+        android:text="Generate QR"
         android:id="@+id/button2"
         android:onClick="genQR"
         android:layout_alignParentTop="true"

@@ -1,5 +1,6 @@
 package com.defiance.chandlerfreeman.pwn;
 
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -43,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
     public final static int WIDTH = 650;
-    public final static String STR = "WIFI:S:PWN Test Network;T:WPA;P:pwntheworld;;";
+    public static String STR = "WIFI:S:PWN Test Network;T:WPA;P:pwntheworld;;";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,11 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        else if (id == R.id.wifi_settings) {
+            Intent i = new Intent(getApplicationContext(), WifiSettingsActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(i);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -133,6 +139,15 @@ public class MainActivity extends ActionBarActivity {
     public void genQR(View v) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         ImageView imageView = (ImageView) findViewById(R.id.qrCode);
+
+        SharedPreferences prefs = this.getSharedPreferences("com.defiance.chandlerfreeman.pwn", getApplicationContext().MODE_PRIVATE);
+
+        // use a default value using new Date()
+        String ssid = prefs.getString("ssid", "");
+        String pass = prefs.getString("key", "");
+
+        STR = "WIFI:S:" + ssid + ";T:WPA;P:" + pass + ";;";
+
         try {
             Bitmap bitmap = encodeAsBitmap(STR);
             imageView.setImageBitmap(bitmap);
