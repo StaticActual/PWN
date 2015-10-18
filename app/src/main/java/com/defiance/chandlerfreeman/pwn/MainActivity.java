@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.graphics.Typeface;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+import android.app.AlertDialog;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -27,6 +28,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import android.content.Intent;
+import android.content.DialogInterface;
 
 import android.content.Context;
 
@@ -44,7 +46,6 @@ public class MainActivity extends ActionBarActivity {
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
     public final static int WIDTH = 650;
-    public static String STR = "WIFI:S:PWN Test Network;T:WPA;P:pwntheworld;;";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +122,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (scanResult != null) {
+        if (requestCode == 1 && scanResult != null) {
             String contents = intent.getStringExtra("SCAN_RESULT");
             //String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
             WifiParsedResult wifiParsedResult = new QRWifiParser().parse(contents);
@@ -130,9 +131,6 @@ public class MainActivity extends ActionBarActivity {
             // TODO: Insert code to complete connection
             WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
             Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
-        }
-        else {
-            Log.v("DebugLog", "Failed");
         }
     }
 
@@ -146,13 +144,26 @@ public class MainActivity extends ActionBarActivity {
         String ssid = prefs.getString("ssid", "");
         String pass = prefs.getString("key", "");
 
-        STR = "WIFI:S:" + ssid + ";T:WPA;P:" + pass + ";;";
+        String STR = "WIFI:S:" + ssid + ";T:WPA;P:" + pass + ";;";
 
-        try {
-            Bitmap bitmap = encodeAsBitmap(STR);
-            imageView.setImageBitmap(bitmap);
-        } catch (WriterException e) {
-            e.printStackTrace();
+        if (!ssid.isEmpty() && !pass.isEmpty()) {
+            try {
+                Bitmap bitmap = encodeAsBitmap(STR);
+                imageView.setImageBitmap(bitmap);
+            } catch (WriterException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Error")
+                    .setMessage("Please enter your wifi network information in the 'Your Wifi Settings' menu")
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
     }
 
