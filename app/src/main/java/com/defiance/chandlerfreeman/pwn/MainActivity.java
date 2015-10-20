@@ -32,6 +32,8 @@ import android.content.DialogInterface;
 
 import android.content.Context;
 
+import se.simbio.encryption.Encryption;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -132,7 +134,14 @@ public class MainActivity extends ActionBarActivity {
         if (resultCode != 0 && scanResult != null) {
             String contents = intent.getStringExtra("SCAN_RESULT");
 
-            WifiParsedResult wifiParsedResult = new QRWifiParser().parse(contents);
+            Log.v("DebugLog", "Success! Undecrypted Contents: " + contents);
+
+            Encryption decryption = Encryption.getDefault("{{AMBER-LYNN12[#", "m16", new byte[16]);
+            String decrypted = decryption.decryptOrNull(contents);
+
+            Log.v("DebugLog", "Success! Decrypted Contents: " + decrypted);
+
+            WifiParsedResult wifiParsedResult = new QRWifiParser().parse(decrypted);
             Log.v("DebugLog", "Success! Contents: " + contents);
 
             new AlertDialog.Builder(MainActivity.this)
@@ -146,8 +155,8 @@ public class MainActivity extends ActionBarActivity {
                     .show();
 
             // TODO: Insert code to complete connection
-            WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
+            //WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            //Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
         }
     }
 
@@ -163,11 +172,14 @@ public class MainActivity extends ActionBarActivity {
 
         String STR = "WIFI:S:" + ssid + ";T:WPA;P:" + pass + ";;";
 
-        Log.v("Debug", "Generated encrypted string: " + STR);
+        Encryption encryption = Encryption.getDefault("{{AMBER-LYNN12[#", "m16", new byte[16]);
+        String encrypted = encryption.encryptOrNull(STR);
+
+        Log.v("Debug", "Generated encrypted string: " + encrypted);
 
         if (!ssid.isEmpty() && !pass.isEmpty()) {
             try {
-                Bitmap bitmap = encodeAsBitmap(STR);
+                Bitmap bitmap = encodeAsBitmap(encrypted);
                 imageView.setImageBitmap(bitmap);
             } catch (WriterException e) {
                 e.printStackTrace();
