@@ -32,6 +32,12 @@ import android.content.DialogInterface;
 
 import android.content.Context;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.NoSuchPaddingException;
+
 public class MainActivity extends ActionBarActivity {
 
     // Declaring Your View and Variables
@@ -122,12 +128,23 @@ public class MainActivity extends ActionBarActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (requestCode == 1 && scanResult != null) {
+        Log.v("DebugLog", "requestCode is " + requestCode + " and resultCode is " + resultCode);
+        if (resultCode != 0 && scanResult != null) {
             String contents = intent.getStringExtra("SCAN_RESULT");
-            //String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+
             WifiParsedResult wifiParsedResult = new QRWifiParser().parse(contents);
             Log.v("DebugLog", "Success! Contents: " + contents);
-            Log.v("DebugLog", "SSID: " + wifiParsedResult.getSsid());
+
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Connecting to network")
+                    .setMessage("Connecting to " + wifiParsedResult.getSsid())
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
             // TODO: Insert code to complete connection
             WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
             Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
@@ -145,6 +162,8 @@ public class MainActivity extends ActionBarActivity {
         String pass = prefs.getString("key", "");
 
         String STR = "WIFI:S:" + ssid + ";T:WPA;P:" + pass + ";;";
+
+        Log.v("Debug", "Generated encrypted string: " + STR);
 
         if (!ssid.isEmpty() && !pass.isEmpty()) {
             try {
