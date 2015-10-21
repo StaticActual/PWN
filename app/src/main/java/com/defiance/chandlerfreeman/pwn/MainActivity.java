@@ -73,9 +73,7 @@ public class MainActivity extends ActionBarActivity {
 
         if(android.os.Build.VERSION.SDK_INT >= 19) {
             AdView mAdView = (AdView) findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder()
-                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                    .build();
+            AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }
 
