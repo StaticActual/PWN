@@ -3,17 +3,12 @@ package com.defiance.chandlerfreeman.pwn;
 /**
  * Created by chandlerfreeman on 10/5/15.
  */
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
-import com.google.zxing.integration.android.IntentIntegrator;
 
 /**
  * Created by hp1 on 21-01-2015.

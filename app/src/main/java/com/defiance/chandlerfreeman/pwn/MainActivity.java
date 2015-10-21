@@ -1,7 +1,5 @@
 package com.defiance.chandlerfreeman.pwn;
 
-import android.content.SharedPreferences;
-
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,35 +7,31 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.View;
-
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 import android.app.AlertDialog;
 
+import android.net.wifi.WifiManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
-
 import com.google.zxing.WriterException;
-
 import com.google.zxing.client.result.WifiParsedResult;
-
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import se.simbio.encryption.Encryption;
+
 import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
-import se.simbio.encryption.Encryption;
-
 public class MainActivity extends ActionBarActivity {
 
     // Declaring Your View and Variables
-
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
@@ -54,12 +48,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // Creating The Toolbar and setting it as the Toolbar for the activity
-
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
@@ -68,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // Assiging the Sliding Tab Layout View
+        // Assigning the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 
@@ -107,7 +98,7 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -120,12 +111,11 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     public void scanButtonOnClick(View v) {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         integrator.setPrompt("");
-        integrator.setCameraId(0);  // Use a specific camera of the device
+        integrator.setCameraId(0);
         integrator.setBeepEnabled(false);
         integrator.initiateScan();
     }
@@ -135,17 +125,12 @@ public class MainActivity extends ActionBarActivity {
         Log.v("DebugLog", "requestCode is " + requestCode + " and resultCode is " + resultCode);
         if (resultCode != 0 && scanResult != null) {
             String contents = intent.getStringExtra("SCAN_RESULT");
-
             Log.v("DebugLog", "Success! Undecrypted Contents: " + contents);
-
             Encryption decryption = Encryption.getDefault("{{AMBER-LYNN12[#", "m16", new byte[16]);
             String decrypted = decryption.decryptOrNull(contents);
-
             Log.v("DebugLog", "Success! Decrypted Contents: " + decrypted);
-
             WifiParsedResult wifiParsedResult = new QRWifiParser().parse(decrypted);
             Log.v("DebugLog", "Success! Contents: " + contents);
-
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Connecting to network")
                     .setMessage("Connecting to " + wifiParsedResult.getSsid())
@@ -155,10 +140,8 @@ public class MainActivity extends ActionBarActivity {
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
-
-            // TODO: Insert code to complete connection
-            //WifiManager wManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            //Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
+            WifiManager wManager = (WifiManager) getSystemService(getApplicationContext().WIFI_SERVICE);
+            Object config = new WifiConfig(wManager).connectToWifi(wifiParsedResult);
         }
     }
 
@@ -168,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
 
         SharedPreferences prefs = this.getSharedPreferences("com.defiance.chandlerfreeman.pwn", getApplicationContext().MODE_PRIVATE);
 
-        // use a default value using new Date()
+        // Use a default value using new Date()
         String ssid = prefs.getString("ssid", "");
         String pass = prefs.getString("key", "");
 
