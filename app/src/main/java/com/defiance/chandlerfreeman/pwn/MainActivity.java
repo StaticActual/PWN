@@ -1,7 +1,7 @@
 package com.defiance.chandlerfreeman.pwn;
 
 import android.content.SharedPreferences;
-import android.net.wifi.WifiManager;
+
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,36 +9,30 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.graphics.*;
+
 import android.view.View;
-import android.widget.TextView;
-import android.graphics.Typeface;
+
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 import android.app.AlertDialog;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.Result;
+
 import com.google.zxing.WriterException;
-import com.google.zxing.client.result.ResultParser;
+
 import com.google.zxing.client.result.WifiParsedResult;
-import com.google.zxing.client.result.WifiResultParser;
+
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import android.content.Intent;
 import android.content.DialogInterface;
 
-import android.content.Context;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import se.simbio.encryption.Encryption;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.NoSuchPaddingException;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -85,6 +79,14 @@ public class MainActivity extends ActionBarActivity {
                 return getResources().getColor(R.color.tabsScrollColor);
             }
         });
+
+        if(android.os.Build.VERSION.SDK_INT >= 19) {
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                    .build();
+            mAdView.loadAd(adRequest);
+        }
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
